@@ -1,4 +1,4 @@
-import 'package:calculs/providers/profile.dart';
+import 'package:calculs/repository/profile.dart';
 import 'package:calculs/screens/tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -83,10 +83,10 @@ class _NewProfileScreenState extends ConsumerState<NewProfileScreen> {
                       child: CircularProgressIndicator(),
                     );
                   });
-                  await ref.read(profileProvider.notifier).createProfile(
-                        name: _nameController.text,
-                        image: "",
-                      );
+                  await ProfileRepository.createProfile(
+                    name: _nameController.text,
+                    image: "",
+                  );
 
                   await Future.delayed(
                     const Duration(milliseconds: 500),

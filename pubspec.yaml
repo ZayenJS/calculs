@@ -35,14 +35,15 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   audioplayers: ^6.0.0
-  sqfentity: ^2.5.0
   flutter_riverpod: ^2.5.1
   build_runner: ^2.4.12
   build_verify: ^3.1.0
-  sqfentity_gen: ^2.5.0
   image_picker: ^1.1.2
 
   http: any
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  hive_generator: ^2.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

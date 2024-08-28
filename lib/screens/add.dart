@@ -3,7 +3,9 @@ import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:calculs/data/failure.dart';
 import 'package:calculs/data/success.dart';
-import 'package:calculs/providers/profile.dart';
+import 'package:calculs/providers/addition.dart';
+import 'package:calculs/repository/profile.dart';
+import 'package:calculs/widgets/numbers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,20 +17,13 @@ class AddScreen extends ConsumerStatefulWidget {
 }
 
 class _AddScreenState extends ConsumerState<AddScreen> {
-  final TextEditingController _userInputController = TextEditingController();
+  String _userInput = "?";
   final AudioPlayer _player = AudioPlayer();
-
-  int _getRandomInt() {
-    // get max value from user preferences
-    return Random().nextInt(40);
-  }
 
   @override
   Widget build(BuildContext context) {
-    final firstNumber = _getRandomInt();
-    final secondNumber = _getRandomInt();
-
-    final result = firstNumber + secondNumber;
+    final addState = ref.watch(additionProvider);
+    final result = addState.firstValue + addState.secondValue;
 
     return Scaffold(
       appBar: AppBar(
@@ -44,70 +39,118 @@ class _AddScreenState extends ConsumerState<AddScreen> {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
-                "$firstNumber + $secondNumber = ",
-                style: Theme.of(context).textTheme.headlineMedium,
+                "${addState.firstValue} + ${addState.secondValue} = ",
+                style: Theme.of(context).textTheme.headlineLarge,
               ),
-              SizedBox(
-                width: 75,
-                child: TextField(
-                  controller: _userInputController,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                  ),
-                ),
+              Text(
+                _userInput,
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
             ],
           ),
           const SizedBox(height: 20),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-            ),
-            onPressed: () async {
-              await ref.read(profileProvider.notifier).incrementAdditions();
-
-              final isCorrect =
-                  int.tryParse(_userInputController.text) == result;
-
-              if (!context.mounted) {
-                return;
-              }
-
-              if (isCorrect) {
-                _player.play(AssetSource("audio/success.mp3"));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: Colors.green,
-                    content: Text(
-                      successMessages[Random().nextInt(successMessages.length)],
+          const Divider(),
+          const SizedBox(height: 20),
+          Numbers(
+            onPressed: (value) {
+              setState(() {
+                if (_userInput.length > 10) {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.red,
+                      content: Text(
+                        "Le nombre est trop long",
+                      ),
                     ),
-                  ),
-                );
-                setState(() {
-                  _userInputController.clear();
-                });
+                  );
 
-                ref.read(profileProvider.notifier).incrementCorrectAdditions();
-              } else {
-                _player.play(AssetSource("audio/error.mp3"));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: const Color.fromARGB(255, 214, 100, 100),
-                    content: Text(
-                      failureMessages[Random().nextInt(failureMessages.length)],
-                    ),
-                  ),
-                );
-              }
+                  return;
+                }
+
+                if (_userInput.contains('?')) {
+                  _userInput = "";
+                }
+
+                _userInput += value.toString();
+              });
             },
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32.0),
-              child: Text('Ok'),
-            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                ),
+                onPressed: () {
+                  setState(
+                    () {
+                      _userInput = "?";
+                    },
+                  );
+                },
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 32.0),
+                  child: Text('Effacer'),
+                ),
+              ),
+              const SizedBox(width: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                ),
+                onPressed: () async {
+                  await ProfileRepository.incrementAdditions();
+
+                  final isCorrect = int.tryParse(_userInput) == result;
+
+                  if (!context.mounted) {
+                    return;
+                  }
+
+                  if (isCorrect) {
+                    _player.play(AssetSource("audio/success.mp3"));
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: Colors.green,
+                        content: Text(
+                          successMessages[
+                              Random().nextInt(successMessages.length)],
+                        ),
+                      ),
+                    );
+                    setState(() {
+                      _userInput = "?";
+                    });
+
+                    ProfileRepository.incrementCorrectAdditions();
+                  } else {
+                    _player.play(AssetSource("audio/error.mp3"));
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor:
+                            const Color.fromARGB(255, 214, 100, 100),
+                        content: Text(
+                          failureMessages[
+                              Random().nextInt(failureMessages.length)],
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 32.0),
+                  child: Text('Ok'),
+                ),
+              ),
+            ],
           ),
         ],
       ),

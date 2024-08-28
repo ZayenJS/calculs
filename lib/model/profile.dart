@@ -1,63 +1,63 @@
-import 'package:calculs/model/timestamps.dart';
-import 'package:sqfentity_gen/sqfentity_gen.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-const profilesTable = SqfEntityTable(
-  tableName: 'profiles',
-  primaryKeyName: 'id',
-  primaryKeyType: PrimaryKeyType.integer_auto_incremental,
-  useSoftDeleting: false,
-  modelName: "Profile",
-  fields: [
-    SqfEntityField('name', DbType.text, isNotNull: true),
-    SqfEntityField('picture', DbType.text),
-    SqfEntityField(
-      'additions',
-      DbType.integer,
-      isNotNull: true,
-      defaultValue: 0,
-    ),
-    SqfEntityField(
-      'correct_additions',
-      DbType.integer,
-      isNotNull: true,
-      defaultValue: 0,
-    ),
-    SqfEntityField(
-      'subtractions',
-      DbType.integer,
-      isNotNull: true,
-      defaultValue: 0,
-    ),
-    SqfEntityField(
-      'correct_subtractions',
-      DbType.integer,
-      isNotNull: true,
-      defaultValue: 0,
-    ),
-    SqfEntityField(
-      'multiplications',
-      DbType.integer,
-      isNotNull: true,
-      defaultValue: 0,
-    ),
-    SqfEntityField(
-      'correct_multiplications',
-      DbType.integer,
-      isNotNull: true,
-      defaultValue: 0,
-    ),
-    SqfEntityField(
-      'divisions',
-      DbType.integer,
-      isNotNull: true,
-      defaultValue: 0,
-    ),
-    SqfEntityField(
-      'correct_divisions',
-      DbType.integer,
-      isNotNull: true,
-      defaultValue: 0,
-    ),
-    ...timestamps,
-  ],
-);
+part 'profile.g.dart';
+
+@HiveType(typeId: 0)
+class Profile {
+  static const String boxName = 'profileBox';
+
+  @HiveField(0)
+  late int id;
+
+  @HiveField(1)
+  late String name;
+
+  @HiveField(2)
+  late String picture;
+
+  @HiveField(3)
+  late int additions;
+
+  @HiveField(4)
+  late int correctAdditions;
+
+  @HiveField(5)
+  late int subtractions;
+
+  @HiveField(6)
+  late int correctSubtractions;
+
+  @HiveField(7)
+  late int multiplications;
+
+  @HiveField(8)
+  late int correctMultiplications;
+
+  @HiveField(9)
+  late int divisions;
+
+  @HiveField(10)
+  late int correctDivisions;
+
+  @HiveField(11)
+  late DateTime createdAt;
+
+  @HiveField(12)
+  late DateTime updatedAt;
+
+  Profile({
+    required this.id,
+    required this.name,
+    required this.picture,
+    required this.additions,
+    required this.correctAdditions,
+    required this.subtractions,
+    required this.correctSubtractions,
+    required this.multiplications,
+    required this.correctMultiplications,
+    required this.divisions,
+    required this.correctDivisions,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+}

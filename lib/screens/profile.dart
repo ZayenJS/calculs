@@ -1,4 +1,5 @@
-import 'package:calculs/providers/profile.dart';
+import 'package:calculs/model/boxes.dart';
+import 'package:calculs/repository/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,21 +8,23 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileState = ref.watch(profileProvider);
+    final profile = ProfileRepository.getProfile();
+    print("addition ${profile.additions}");
+    print("correct addiotion ${profile.correctAdditions}");
 
     return Scaffold(
       body: Column(
         children: [
           Text(
-            profileState.profile!.name!,
+            profile.name ?? "",
             style: const TextStyle(fontSize: 24),
           ),
           const Divider(),
           Text(
-            "Additions: ${profileState.profile!.additions}",
+            "Additions: ${profile.additions}",
           ),
           Text(
-            "Additions correctes: ${profileState.profile!.correct_additions}",
+            "Additions correctes: ${profile.correctAdditions}",
           ),
         ],
       ),

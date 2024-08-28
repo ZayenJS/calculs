@@ -1,22 +1,19 @@
-import 'dart:io';
-
-import 'package:calculs/model/model.dart';
-import 'package:calculs/providers/profile.dart';
+import 'package:calculs/model/boxes.dart';
+import 'package:calculs/model/profile.dart';
+import 'package:calculs/repository/profile.dart';
 import 'package:calculs/screens/new_profile.dart';
 import 'package:calculs/screens/tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final bool isInitialized = await DbModel().initializeDB();
-  if (isInitialized == true) {
-    runApp(const ProviderScope(child: MyApp()));
-  } else {
-    print('Error initializing the database');
-    exit(1);
-  }
+  await Hive.initFlutter();
+  Hive.registerAdapter(ProfileAdapter());
+  profileBox = await Hive.openBox<Profile>(Profile.boxName);
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -30,7 +27,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
-    ref.read(profileProvider.notifier).loadProfile();
+    // ref.read(profileProvider.notifier).loadProfile();
   }
 
   @override
@@ -43,24 +40,9 @@ class _MyAppState extends ConsumerState<MyApp> {
         ),
         useMaterial3: true,
       ),
-      home: FutureBuilder(
-        future: ref.watch(profileProvider.notifier).loadProfile(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-
-          if (snapshot.data == null) {
-            return const NewProfileScreen();
-          }
-
-          return const TabsScreen();
-        },
-      ),
+      home: ProfileRepository.profileExists()
+          ? const TabsScreen()
+          : const NewProfileScreen(),
     );
   }
 }

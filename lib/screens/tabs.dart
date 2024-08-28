@@ -1,3 +1,4 @@
+import 'package:calculs/model/boxes.dart';
 import 'package:calculs/screens/add.dart';
 import 'package:calculs/screens/profile.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen>
 
     _tabController = TabController(
       length: _screens.length,
-      initialIndex: 1,
+      initialIndex: 0,
       vsync: this,
     );
   }
