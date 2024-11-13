@@ -9,14 +9,14 @@ import 'package:calculs/widgets/numbers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AddScreen extends ConsumerStatefulWidget {
-  const AddScreen({super.key});
+class InlineAddScreen extends ConsumerStatefulWidget {
+  const InlineAddScreen({super.key});
 
   @override
-  ConsumerState<AddScreen> createState() => _AddScreenState();
+  ConsumerState<InlineAddScreen> createState() => _InlineAddScreenState();
 }
 
-class _AddScreenState extends ConsumerState<AddScreen> {
+class _InlineAddScreenState extends ConsumerState<InlineAddScreen> {
   String _userInput = "?";
   final AudioPlayer _player = AudioPlayer();
 

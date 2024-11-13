@@ -11,9 +11,12 @@ class AdditionState {
 
 class AdditionNotifier extends StateNotifier<AdditionState> {
   AdditionNotifier()
-      : super(AdditionState(
+      : super(
+          AdditionState(
             firstValue: Random().nextInt(40),
-            secondValue: Random().nextInt(40)));
+            secondValue: Random().nextInt(40),
+          ),
+        );
 
   void regenerateNumbers() {
     state = AdditionState(
