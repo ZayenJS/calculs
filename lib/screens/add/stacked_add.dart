@@ -17,8 +17,9 @@ class StackedAddScreen extends ConsumerStatefulWidget {
 }
 
 class _StackedAddScreenState extends ConsumerState<StackedAddScreen> {
-  String _userInput = "";
   final AudioPlayer _player = AudioPlayer();
+  final List<String> _userInputs = [];
+  bool _addedCarry = false;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +47,18 @@ class _StackedAddScreenState extends ConsumerState<StackedAddScreen> {
       )..addAll(secondValue);
     }
 
+    if (_userInputs.length < numberOfColumns) {
+      _userInputs.removeWhere((element) => element.isEmpty);
+
+      for (int i = 0; i < numberOfColumns; i++) {
+        _userInputs.insert(0, '');
+      }
+    }
+
+    if (_userInputs.length > numberOfColumns) {
+      _userInputs.removeRange(0, _userInputs.length - numberOfColumns);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(""),
@@ -70,16 +83,19 @@ class _StackedAddScreenState extends ConsumerState<StackedAddScreen> {
                                 width: 25.0,
                                 height: 25.0,
                                 decoration: BoxDecoration(
-                                  border: i == numberOfColumns - 1
-                                      ? null
-                                      : Border.all(
+                                  border: _addedCarry &&
+                                          i != numberOfColumns - 1
+                                      ? Border.all(
                                           color: Theme.of(context).primaryColor,
                                           width: 1.0,
-                                        ),
+                                        )
+                                      : null,
                                   borderRadius: BorderRadius.circular(25.0),
                                 ),
                                 child: Text(
-                                  i == numberOfColumns - 1 ? "" : "1",
+                                  _addedCarry && i != numberOfColumns - 1
+                                      ? "1"
+                                      : "",
                                   style: TextStyle(
                                     fontSize: 17.0,
                                     fontWeight: FontWeight.bold,
@@ -139,7 +155,7 @@ class _StackedAddScreenState extends ConsumerState<StackedAddScreen> {
                             "=",
                             style: Theme.of(context).textTheme.displayMedium,
                           ),
-                          ...result.map(
+                          ..._userInputs.map(
                             (e) => Text(
                               e.toString(),
                               style: Theme.of(context).textTheme.displayMedium,
@@ -154,13 +170,41 @@ class _StackedAddScreenState extends ConsumerState<StackedAddScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _addedCarry = false;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                ),
+                child: Text('Retirer la retenue'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _addedCarry = true;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green[300],
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                ),
+                child: Text('Ajouter une retenue'),
+              ),
+            ],
+          ),
           const Divider(),
           const SizedBox(height: 20),
           Numbers(
             onPressed: (value) {
               setState(() {
-                // TODO: Implement the user input logic
+                _userInputs.removeWhere((element) => element.isEmpty);
+                _userInputs.insert(0, value.toString());
               });
             },
           ),
@@ -177,7 +221,14 @@ class _StackedAddScreenState extends ConsumerState<StackedAddScreen> {
                 onPressed: () {
                   setState(
                     () {
-                      // TODO: Implement the clear logic
+                      if (_userInputs.isNotEmpty) {
+                        for (int i = 0; i < _userInputs.length; i++) {
+                          if (_userInputs[i].isNotEmpty) {
+                            _userInputs[i] = "";
+                            break;
+                          }
+                        }
+                      }
                     },
                   );
                 },
@@ -193,49 +244,48 @@ class _StackedAddScreenState extends ConsumerState<StackedAddScreen> {
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 ),
                 onPressed: () async {
-                  setState(() {
-                    ref.read(additionProvider.notifier).regenerateNumbers();
-                  });
-                  // TODO: Implement the validation logic
-                  // await ProfileRepository.incrementAdditions();
+                  await ProfileRepository.incrementAdditions();
 
-                  // final isCorrect = int.tryParse(_userInput) == result;
+                  final isCorrect = _userInputs.join() ==
+                      (addState.firstValue + addState.secondValue).toString();
 
-                  // if (!context.mounted) {
-                  //   return;
-                  // }
+                  if (!context.mounted) {
+                    return;
+                  }
 
-                  // if (isCorrect) {
-                  //   _player.play(AssetSource("audio/success.mp3"));
-                  //   ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     SnackBar(
-                  //       backgroundColor: Colors.green,
-                  //       content: Text(
-                  //         successMessages[
-                  //             Random().nextInt(successMessages.length)],
-                  //       ),
-                  //     ),
-                  //   );
-                  //   setState(() {
-                  //     _userInput = "?";
-                  //   });
+                  if (isCorrect) {
+                    _player.play(AssetSource("audio/success.mp3"));
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: Colors.green,
+                        content: Text(
+                          successMessages[
+                              Random().nextInt(successMessages.length)],
+                        ),
+                      ),
+                    );
+                    setState(() {
+                      _userInputs.clear();
+                      _addedCarry = false;
+                      ref.read(additionProvider.notifier).regenerateNumbers();
+                    });
 
-                  //   ProfileRepository.incrementCorrectAdditions();
-                  // } else {
-                  //   _player.play(AssetSource("audio/error.mp3"));
-                  //   ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     SnackBar(
-                  //       backgroundColor:
-                  //           const Color.fromARGB(255, 214, 100, 100),
-                  //       content: Text(
-                  //         failureMessages[
-                  //             Random().nextInt(failureMessages.length)],
-                  //       ),
-                  //     ),
-                  //   );
-                  // }
+                    ProfileRepository.incrementCorrectAdditions();
+                  } else {
+                    _player.play(AssetSource("audio/error.mp3"));
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor:
+                            const Color.fromARGB(255, 214, 100, 100),
+                        content: Text(
+                          failureMessages[
+                              Random().nextInt(failureMessages.length)],
+                        ),
+                      ),
+                    );
+                  }
                 },
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 32.0),

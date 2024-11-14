@@ -1,15 +1,6 @@
-import 'dart:math';
-
-import 'package:audioplayers/audioplayers.dart';
-import 'package:calculs/data/failure.dart';
-import 'package:calculs/data/success.dart';
-import 'package:calculs/providers/addition.dart';
-import 'package:calculs/repository/profile.dart';
 import 'package:calculs/screens/add/inline_add.dart';
 import 'package:calculs/screens/add/stacked_add.dart';
-import 'package:calculs/widgets/numbers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddScreen extends StatelessWidget {
   const AddScreen({super.key});
@@ -76,10 +67,22 @@ class AddScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 210, 136, 240),
-                      foregroundColor: Colors.white,
+                      // backgroundColor: const Color.fromARGB(255, 210, 136, 240),
+                      // foregroundColor: Colors.white,
+                      backgroundColor: const Color.fromARGB(255, 188, 188, 188),
+                      foregroundColor: const Color.fromARGB(255, 106, 106, 106),
                     ),
                     onPressed: () {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.orange,
+                          content: Text(
+                            "Cette fonctionnalité n'est pas encore disponible",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      );
                       // Navigator.push(
                       //   context,
                       //   MaterialPageRoute(

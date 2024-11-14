@@ -1,4 +1,3 @@
-import 'package:calculs/model/boxes.dart';
 import 'package:calculs/screens/add/add.dart';
 import 'package:calculs/screens/profile.dart';
 import 'package:flutter/material.dart';
