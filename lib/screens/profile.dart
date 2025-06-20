@@ -1,3 +1,4 @@
+import 'package:calculs/repository/multiplications.dart';
 import 'package:calculs/repository/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,8 +9,6 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ProfileRepository.getProfile();
-    print("addition ${profile.additions}");
-    print("correct addiotion ${profile.correctAdditions}");
 
     return Scaffold(
       body: Column(
@@ -24,6 +23,30 @@ class ProfileScreen extends ConsumerWidget {
           ),
           Text(
             "Additions correctes: ${profile.correctAdditions}",
+          ),
+          FutureBuilder<int>(
+            future: MultiplicationsRepository.getTotalMultiplications(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Text("Multiplications: Chargement...");
+              } else if (snapshot.hasError) {
+                return Text("Multiplications: Erreur");
+              } else {
+                return Text("Multiplications: ${snapshot.data}");
+              }
+            },
+          ),
+          FutureBuilder<int>(
+            future: MultiplicationsRepository.getCorrectMultiplications(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Text("Multiplications correctes: Chargement...");
+              } else if (snapshot.hasError) {
+                return Text("Multiplications correctes: Erreur");
+              } else {
+                return Text("Multiplications correctes: ${snapshot.data}");
+              }
+            },
           ),
         ],
       ),

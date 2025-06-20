@@ -47,4 +47,18 @@ class ProfileRepository {
 
     profileBox.putAt(0, profile!);
   }
+
+  static Future<void> incrementMultiplications() async {
+    final profile = profileBox.getAt(0);
+    profile.multiplications++;
+
+    profileBox.putAt(0, profile!);
+  }
+
+  static Future<void> incrementCorrectMultiplications() async {
+    final profile = profileBox.getAt(0);
+    profile.correctMultiplications++;
+
+    profileBox.putAt(0, profile!);
+  }
 }

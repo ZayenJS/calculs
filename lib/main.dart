@@ -1,4 +1,5 @@
 import 'package:calculs/model/boxes.dart';
+import 'package:calculs/model/multiplication.dart';
 import 'package:calculs/model/profile.dart';
 import 'package:calculs/repository/profile.dart';
 import 'package:calculs/screens/new_profile.dart';
@@ -13,6 +14,10 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(ProfileAdapter());
   profileBox = await Hive.openBox<Profile>(Profile.boxName);
+  Hive.registerAdapter(MultiplicationAdapter());
+  multiplicationsBox =
+      await Hive.openBox<Multiplication>(Multiplication.boxName);
+
   runApp(const ProviderScope(child: MyApp()));
 }
 

@@ -1,4 +1,5 @@
 import 'package:calculs/screens/add/add.dart';
+import 'package:calculs/screens/multiply/multiply.dart';
 import 'package:calculs/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +17,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen>
   final _screens = [
     const AddScreen(),
     // SubtractScreen(),
-    // MultiplyScreen(),
+    const MultiplyScreen(),
     // DivideScreen(),
     const ProfileScreen(),
   ];
@@ -45,13 +46,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen>
         child: TabBarView(
           physics: const NeverScrollableScrollPhysics(),
           controller: _tabController,
-          children: const [
-            AddScreen(),
-            // SubtractScreen(),
-            // MultiplyScreen(),
-            // DivideScreen(),
-            ProfileScreen(),
-          ],
+          children: _screens,
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -80,10 +75,10 @@ class _TabsScreenState extends ConsumerState<TabsScreen>
           //   icon: Icon(Icons.minimize_outlined),
           //   label: "Soustractions",
           // ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.close),
-          //   label: "Multiplications",
-          // ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.close),
+            label: "Multiplications",
+          ),
           // BottomNavigationBarItem(
           //   icon: Icon(Icons.exposure),
           //   label: "Divisions",
